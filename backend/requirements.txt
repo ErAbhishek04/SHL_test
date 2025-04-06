@@ -20,3 +20,4 @@ streamlit
 langchain-huggingface
 huggingface-hub
 langchain
+langchain-community
