@@ -9,7 +9,8 @@ openai
 fastapi
 uvicorn
 python-multipart
-langchain
+transformers==4.35.2
+sentence-transformers==2.2.2
 langchain-community
 sentence-transformers
 faiss-cpu

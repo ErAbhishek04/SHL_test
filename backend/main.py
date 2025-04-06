@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from langchain_community.vectorstores import FAISS
 from langchain.schema.document import Document
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from openai import OpenAI  # ✅ New SDK
 
