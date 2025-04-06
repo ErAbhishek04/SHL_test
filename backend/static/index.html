@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SHL Test Recommender</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+    h1 {
+      color: #0056b3;
+    }
+    textarea {
+      width: 100%;
+      height: 140px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: 1.5;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      box-sizing: border-box;
+      font-family: inherit;
+      transition: border-color 0.2s ease-in-out;
+    }
+    textarea:focus {
+      border-color: #007BFF;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .summary {
+      background-color: #ffffff;
+      padding: 20px;
+      border-left: 5px solid #007BFF;
+      margin-top: 30px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    th, td {
+      padding: 14px 12px;
+      border: 1px solid #e0e0e0;
+      text-align: left;
+      font-size: 15px;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+    td a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    td a:hover {
+      text-decoration: underline;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      textarea {
+        height: 120px;
+      }
+      th, td {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 SHL Assessment Recommender</h1>
+  <p>Enter a job description or query below to get relevant SHL assessments:</p>
+  <textarea id="queryInput" placeholder="e.g., Looking for an adaptive numerical reasoning test under 40 minutes..."></textarea>
+  <br/>
+  <button onclick="fetchRecommendations()">Get Recommendations</button>
+
+  <div class="summary" id="groqSuggestion" style="display: none;"></div>
+
+  <table id="resultsTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>Assessment Name</th>
+        <th>Remote Testing</th>
+        <th>Adaptive/IRT</th>
+        <th>Duration</th>
+        <th>Test Type</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+
+  <script>
+    async function fetchRecommendations() {
+      const query = document.getElementById("queryInput").value.trim();
+      if (!query) {
+        alert("Please enter a job description or query.");
+        return;
+      }
+
+      const response = await fetch("http://127.0.0.1:8000/recommend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await response.json();
+
+      // Display Groq summary
+      const summaryDiv = document.getElementById("groqSuggestion");
+      summaryDiv.style.display = "block";
+      summaryDiv.innerText = data.groq_suggestion || "No summary available.";
+
+      // Fill table
+      const tbody = document.getElementById("resultsBody");
+      tbody.innerHTML = ""; // Clear old rows
+
+      if (data.recommendations && data.recommendations.length > 0) {
+        data.recommendations.forEach(item => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><a href="${item.Link}" target="_blank">${item["Assessment Name"]}</a></td>
+            <td>${item["Remote Testing"]}</td>
+            <td>${item["Adaptive/IRT"]}</td>
+            <td>${item["Duration"]}</td>
+            <td>${item["Test Type"]}</td>
+          `;
+          tbody.appendChild(row);
+        });
+        document.getElementById("resultsTable").style.display = "table";
+      } else {
+        document.getElementById("resultsTable").style.display = "none";
+        
+      }
+    }
+  </script>
+</body>
+</html>

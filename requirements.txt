@@ -1,0 +1,17 @@
+aiohttp
+beautifulsoup4
+pandas
+lxml
+selenium
+webdriver-manager
+newspaper3k
+openai
+fastapi
+uvicorn
+python-multipart
+langchain
+langchain-community
+sentence-transformers
+faiss-cpu
+pydantic
+requests
