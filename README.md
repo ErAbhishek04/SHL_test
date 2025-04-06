@@ -13,7 +13,7 @@ A full-stack SHL test recommendation app using scraping + AI + vector search.
 - Stores extracted metadata in CSV
 - Uses FAISS + HuggingFace embeddings for similarity search
 - Calls Groq's LLM to generate human-readable suggestions
-- FastAPI backend with optional static HTML frontend
+- FastAPI backend with optional static Streamlit frontend
 
 ---
 
@@ -37,6 +37,9 @@ python Scrapper.py
 
 cd backend
 uvicorn main:app --reload
+
+cd ..
+streamlit run app.py
 
 Access static frontend (if needed):
 http://127.0.0.1:8000/static/index.html
