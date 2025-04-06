@@ -137,5 +137,5 @@ for i, (title, link, duration, test_type, description, job_levels, language) in 
 
 # Save to CSV
 df = pd.DataFrame(all_data)
-df.to_csv("backend/shl_product_catalog.csv", index=False)
+df.to_csv("shl_product_catalog.csv", index=False)
 print("✅ Data saved to 'shl_product_catalog.csv'")
