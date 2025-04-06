@@ -10,9 +10,8 @@ fastapi
 uvicorn
 python-multipart
 transformers
-sentence-transformers
-langchain-community
-sentence-transformers
+sentence-transformers>=2.2.2
+transformers>=4.38.2
 faiss-cpu
 pydantic
 requests
