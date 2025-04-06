@@ -41,8 +41,6 @@ uvicorn main:app --reload
 cd ..
 streamlit run app.py
 
-Access static frontend (if needed):
-http://127.0.0.1:8000/static/index.html
 
 ## Test API
 python test.py
