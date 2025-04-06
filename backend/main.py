@@ -138,6 +138,4 @@ async def recommend_tests(q: Query):
         "groq_suggestion": groq_text
     }
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=10000)
+
