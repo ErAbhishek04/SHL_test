@@ -17,3 +17,4 @@ faiss-cpu
 pydantic
 requests
 lxml[html_clean]
+streamlit
