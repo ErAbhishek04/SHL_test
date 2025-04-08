@@ -13,7 +13,7 @@ if st.button("🔍 Get Recommendations"):
         with st.spinner("Fetching recommendations..."):
             try:
                 # 🔗 Update to your deployed FastAPI URL if remote
-                backend_url = "https://shl-test-8mez.onrender.com"
+                backend_url = "https://shl-backend.up.railway.app/recommend"
                 response = requests.post(backend_url, json={"query": query})
                 
                 if response.status_code == 200:
