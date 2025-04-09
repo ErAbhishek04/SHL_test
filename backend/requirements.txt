@@ -21,3 +21,4 @@ langchain-huggingface
 huggingface-hub
 langchain
 langchain-community
+huggingface_hub[hf_xet]
