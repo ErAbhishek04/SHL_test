@@ -75,57 +75,32 @@ async def recommend_tests(q: Query):
     query = q.query
     results = vector_store.similarity_search(query, k=10)
 
-    # Format SHL recommendations
-    formatted = []
+    # Prepare prompt data
     prompt_info = []
     for doc in results:
         meta = doc.metadata
-        formatted.append({
-            "Assessment Name": meta.get("Product Name"),
-            "Link": meta.get("Link"),
-            "Remote Testing": meta.get("Remote Testing"),
-            "Adaptive/IRT": meta.get("Adaptive/IRT"),
-            "Duration": meta.get("Duration"),
-            "Test Type": meta.get("Test Type")
-        })
         prompt_info.append(
             f"- {meta.get('Product Name')} ({meta.get('Link')}): Remote: {meta.get('Remote Testing')}, "
             f"Adaptive: {meta.get('Adaptive/IRT')}, Duration: {meta.get('Duration')}, "
             f"Type: {meta.get('Test Type')}"
         )
 
-    # Groq response (paragraphs, no table)
+    # Generate summary via Groq
     try:
         messages = [
-    {
-        "role": "system",
-        "content": (
-            "You are an intelligent assistant that recommends SHL assessments based on a job description "
-            "and metadata from real test data. For each test recommendation, write a short, clear paragraph. "
-            "Each paragraph must include:\n"
-            "- The assessment name as a clickable hyperlink (use the test link)\n"
-            "- Explanation of how the 'Test Type' (e.g., Ability & Aptitude, Personality & Behavior) aligns with the job query\n"
-            "- Mention of whether the test supports Remote Testing\n"
-            "- Mention of whether the test is Adaptive/IRT-based testing \n"
-            "- A clear benefit of using the test for the specific job context\n\n"
-            "If multiple assessments are recommended, provide a brief table of contents at the top listing each assessment name (as links). "
-            "Avoid tables in the recommendations; write clear text paragraphs only."
-        )
-    },
-    {
-        "role": "user",
-        "content": (
-            f"Given the job description:\n\"\"\"\n{query}\n\"\"\"\n\n"
-            f"Here are some potentially relevant SHL assessments:\n{chr(10).join(prompt_info)}\n\n"
-            "Now write a short paragraph recommendation for each assessment listed above. "
-            "Remember to include the hyperlink, describe Remote Testing and Adaptive/IRT availability, "
-            "and explain why the Test Type is suitable for the job description."
-        )
-    }
-]
-
-
-
+            {
+                "role": "system",
+                "content": "You are an intelligent assistant that recommends SHL assessments based on job descriptions."
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"Given the job description:\n\"\"\"\n{query}\n\"\"\"\n\n"
+                    f"Here are some potentially relevant SHL assessments:\n{chr(10).join(prompt_info)}\n\n"
+                    "Now write a short paragraph recommendation for each assessment that is most suitable."
+                )
+            }
+        ]
         response = client.chat.completions.create(
             model=GROQ_MODEL,
             messages=messages
@@ -134,10 +109,22 @@ async def recommend_tests(q: Query):
     except Exception as e:
         groq_text = f"Groq response not available: {str(e)}"
 
+    # Filter only tests mentioned in Groq's response
+    selected_tests = []
+    for doc in results:
+        meta = doc.metadata
+        product_name = meta.get("Product Name", "")
+        if product_name.lower() in groq_text.lower():
+            selected_tests.append({
+                "url": meta.get("Link"),
+                "adaptive_support": "Yes" if meta.get("Adaptive/IRT", "").lower() == "yes" else "No",
+                "description": meta.get("Description"),
+                "duration": int(meta.get("Duration", 0)),
+                "remote_support": "Yes" if meta.get("Remote Testing", "").lower() == "yes" else "No",
+                "test_type": [meta.get("Test Type")] if isinstance(meta.get("Test Type"), str) else []
+            })
+
     return {
-        # "recommendations": formatted,
-        "groq_suggestion": groq_text
+        "recommended_assessments": selected_tests,
+        "llm_summary": groq_text
     }
-
-
-
