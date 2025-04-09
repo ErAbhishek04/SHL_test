@@ -23,7 +23,7 @@ def fetch_text_from_url(url: str) -> str:
 
 
 # === Configuration ===
-CSV_PATH = "shl_product_catalog.csv"
+CSV_PATH = "https://github.com/ErAbhishek04/SHL_test/blob/main/backend/shl_product_catalog.csv"
 INDEX_PATH = "faiss_csv_index"
 GROQ_API_KEY = "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"  # Replace with your Groq API key
 GROQ_MODEL = "llama3-70b-8192"  # ✅ Updated supported model
