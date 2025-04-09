@@ -1,8 +1,6 @@
 import streamlit as st
 import requests
 
-
-
 st.set_page_config(
     page_title="My Streamlit App",
     page_icon=None  # 👈 disables favicon
